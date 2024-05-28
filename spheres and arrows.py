@@ -1,6 +1,14 @@
 import trimesh
 from os.path import splitext as osPathSplitext
 import numpy as np
+def concatMesh(mesh1, mesh2, meshOut):
+  # takes mesh 1 and, concats their vertices, then concats their triangles
+  # also makes the triangle mesh indexing start from the last index in the first mesh
+  for x in range(len(mesh2.faces)):
+    mesh2.faces[x] += len(mesh1.vertices)
+  # Concatenate vertices and faces
+  meshOut.faces = np.concatenate((mesh1.faces, mesh2.faces), axis=0)
+  meshOut.vertices = np.concatenate((mesh1.vertices, mesh2.vertices), axis=0)
 class emptyMesh:
   def __init__(self):
     self.faces = []
@@ -16,16 +24,18 @@ class Sphere:
     self.vertices = self.icosphere.vertices + self.position  # Apply position shift
     self.faces = self.icosphere.faces
 class Arrow:
-  def __init__():
-    fe=10
-def concatMesh(mesh1, mesh2, meshOut):
-  # takes mesh 1 and, concats their vertices, then concats their triangles
-  # also makes the triangle mesh indexing start from the last index in the first mesh
-  for x in range(len(mesh2.faces)):
-    mesh2.faces[x] += len(mesh1.vertices)
-  # Concatenate vertices and faces
-  meshOut.faces = np.concatenate((mesh1.faces, mesh2.faces), axis=0)
-  meshOut.vertices = np.concatenate((mesh1.vertices, mesh2.vertices), axis=0)
+  def __init__(self, bodySize, coords, arrowSize, upDir):
+    self.bodyLength, self.bodyRadius = bodySize
+    self.coords = coords
+    self.arrowLength, self.arrowRadius = arrowSize
+    self.direction = upDir
+  def create_mesh(self):
+    self.cylinder = trimesh.creation.cylinder(radius = self.bodyRadius, height = self.bodyLength, sections = 256)
+    self.cone = trimesh.creation.cone(radius = self.arrowRadius, height = self.arrowLength)
+    self.mesh = emptyMesh()
+    concatMesh(self.cylinder,self.cone,self.mesh)
+
+
 def main():
   # Sphere parameters
   subDivs = 4
