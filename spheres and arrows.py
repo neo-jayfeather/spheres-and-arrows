@@ -4,8 +4,10 @@ import numpy as np
 def concatMesh(mesh1, mesh2, meshOut):
   # takes mesh 1 and, concats their vertices, then concats their triangles
   # also makes the triangle mesh indexing start from the last index in the first mesh
+  mesh2Temp = mesh2.faces
   for x in range(len(mesh2.faces)):
     mesh2.faces[x] += len(mesh1.vertices)
+  mesh2.faces = mesh2Temp
   # Concatenate vertices and faces
   meshOut.faces = np.concatenate((mesh1.faces, mesh2.faces), axis=0)
   meshOut.vertices = np.concatenate((mesh1.vertices, mesh2.vertices), axis=0)
@@ -72,7 +74,7 @@ for x in range(totalArrows):
   arrows[x].create_mesh()
   concatMesh(arrows[totalArrows],arrows[x], arrows[totalArrows])
 output = trimesh.Trimesh(vertices = arrows[totalArrows].vertices, faces = arrows[totalArrows].faces)
-#output.export("C:\\users\\ncneo\\desktop\\cylinder.stl","stl")
+output.export("C:\\users\\ncneo\\desktop\\TOTALARROWSTEST.stl","stl")
 
 # Sphere parameters
 subDivs = 4
