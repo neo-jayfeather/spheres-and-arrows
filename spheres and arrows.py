@@ -2,15 +2,17 @@ import trimesh
 from os.path import splitext as osPathSplitext
 import numpy as np
 def concatMesh(mesh1, mesh2, meshOut):
-  # takes mesh 1 and, concats their vertices, then concats their triangles
-  # also makes the triangle mesh indexing start from the last index in the first mesh
-  mesh2Temp = mesh2.faces
-  for x in range(len(mesh2.faces)):
-    mesh2.faces[x] += len(mesh1.vertices)
-  mesh2.faces = mesh2Temp
-  # Concatenate vertices and faces
-  meshOut.faces = np.concatenate((mesh1.faces, mesh2.faces), axis=0)
-  meshOut.vertices = np.concatenate((mesh1.vertices, mesh2.vertices), axis=0)
+  """
+  Concatenates the vertices and faces of two meshes into a new mesh object.
+
+  Args:
+      mesh1 (trimesh.Trimesh): The first mesh to concatenate.
+      mesh2 (trimesh.Trimesh): The second mesh to concatenate.
+      meshOut (emptyMesh): An empty mesh object to store the combined result.
+  """
+  new_vertices = np.concatenate((mesh1.vertices, mesh2.vertices), axis=0) #combine vertices
+  new_faces = np.concatenate((mesh1.faces, mesh2.faces + len(mesh1.vertices)), axis=0) #combine renumbered faces
+  meshOut.vertices, meshOut.faces = new_vertices, new_faces #lazy code
 class emptyMesh:
   def __init__(self):
     self.faces = [[0,0,0]]
@@ -73,12 +75,10 @@ totalArrows = len(arrows)-1
 for x in range(totalArrows):
   arrows[x].create_mesh()
   concatMesh(arrows[totalArrows],arrows[x], arrows[totalArrows])
-output = trimesh.Trimesh(vertices = arrows[totalArrows].vertices, faces = arrows[totalArrows].faces)
-output.export("C:\\users\\ncneo\\desktop\\TOTALARROWSTEST.stl","stl")
 
 # Sphere parameters
 subDivs = 4
-radius = 10
+radius = 15
 
 # Create sphere objects
 sphere_left = Sphere(subDivs, radius, [-50, 0, 0])
@@ -93,7 +93,7 @@ concatMesh(sphere_left, sphere_right,  newMesh)
 concatMesh(newMesh, sphere_middle, newMesh)
 concatMesh(newMesh, arrows[totalArrows], newMesh)
 # Create the final mesh object
-mesh = trimesh.Trimesh(vertices=arrows[totalArrows].vertices, faces=arrows[totalArrows].faces)
+mesh = trimesh.Trimesh(vertices=newMesh.vertices, faces=newMesh.faces)
 # Export the mesh as STL
 mesh.export("two_spheres_combined.stl")
 
