@@ -1,6 +1,8 @@
 import trimesh
 from os.path import splitext as osPathSplitext
 import numpy as np
+from skimage.color import lab2rgb
+
 def concatMesh(mesh1, mesh2, meshOut):
   """
   Concatenates the vertices and faces of two meshes into a new mesh object.
@@ -22,6 +24,8 @@ class Sphere:
     self.subDivs = subDivs
     self.radius = radius
     self.position = position
+    self.colors = np.round(lab2rgb(self.position)*255,0)
+    self.colors = [int(value) for value in self.colors]
 
   def create_mesh(self):
     self.icosphere = trimesh.creation.icosphere(subdivisions=self.subDivs, radius=self.radius)
@@ -92,9 +96,8 @@ newMesh = emptyMesh()
 concatMesh(sphere_left, sphere_right,  newMesh)
 concatMesh(newMesh, sphere_middle, newMesh)
 concatMesh(newMesh, arrows[totalArrows], newMesh)
-# Create the final mesh object
+
 mesh = trimesh.Trimesh(vertices=newMesh.vertices, faces=newMesh.faces)
-# Export the mesh as STL
 mesh.export("two_spheres_combined.stl")
 
 print("Exported combined spheres to two_spheres_combined.stl")
