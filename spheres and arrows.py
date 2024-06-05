@@ -83,8 +83,8 @@ class Arrow:
 arrowSize = [97,1]
 coneSize = [3,1.5]
 arrows =  [
-  Arrow([97/2,1],[0,0,50],coneSize,'-Z'),
-  Arrow([97/2,1],[0,0,50],coneSize,"Z"),
+  Arrow(arrowSize,[0,0,50],coneSize,'-Z'),
+  Arrow(arrowSize,[0,0,50],coneSize,"Z"),
   Arrow(arrowSize,[0,0,50],coneSize,'X'),
   Arrow(arrowSize,[0,0,50],coneSize,'-X'),
   Arrow(arrowSize,[0,0,50],coneSize,'Y'),
