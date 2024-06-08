@@ -1,12 +1,15 @@
 import trimesh
-from os.path import splitext as osPathSplitext
 import numpy as np
 from skimage.color import lab2rgb
+
+arrowSize = [97,1] # arrow length and width
+coneSize = [3,1.5] # arrow tip length and width
+subDivs = 4 #sphere subdivisions (20*4^x)
+radius = 2 #sphere raidus
 
 def concatMesh(mesh1, mesh2, meshOut, *args):
   """
   Concatenates the vertices and faces of two meshes into a new mesh object.
-
   Args:
       mesh1 (trimesh.Trimesh): The first mesh to concatenate.
       mesh2 (trimesh.Trimesh): The second mesh to concatenate.
@@ -15,10 +18,7 @@ def concatMesh(mesh1, mesh2, meshOut, *args):
   new_vertices = np.concatenate((mesh1.vertices, mesh2.vertices), axis=0) #combine vertices
   new_faces = np.concatenate((mesh1.faces, mesh2.faces + len(mesh1.vertices)), axis=0) #combine renumbered faces
   if(args):
-    if(args[1]):
-      new_colors = mesh2.colors #empty mesh usage decrease
-    else:
-      new_colors = np.concatenate((mesh1.colors, mesh2.colors), axis=0)
+    new_colors = np.concatenate((mesh1.colors, mesh2.colors), axis=0)
     meshOut.colors = new_colors
   meshOut.vertices, meshOut.faces = new_vertices, new_faces #lazy code
 class emptyMesh:
@@ -62,6 +62,7 @@ class Arrow:
       "X": [255, 255, 255, 255],
       "-X": [0  , 0  , 0  , 255]
     }
+    
     self.cylinder = trimesh.creation.cylinder(radius = self.bodyRadius, height = self.bodyLength, sections = 256)
     self.cone = trimesh.creation.cone(radius = self.arrowRadius, height = self.arrowLength, sections = 256)
     self.mesh = emptyMesh()
@@ -87,8 +88,7 @@ class Arrow:
 
 
 #arrows
-arrowSize = [97,1]
-coneSize = [3,1.5]
+
 arrows =  [
   Arrow(arrowSize,[0,0,50],coneSize,'-Z'),
   Arrow(arrowSize,[0,0,50],coneSize,"Z"),
@@ -103,8 +103,7 @@ for x in range(totalArrows):
   arrows[x].create_mesh()
   concatMesh(arrows[totalArrows],arrows[x], arrows[totalArrows], True)
 # Sphere parameters
-subDivs = 4
-radius = 2
+
 
 spheres = [
   Sphere(subDivs, radius, [94.21, 1.5, 5.42]),
